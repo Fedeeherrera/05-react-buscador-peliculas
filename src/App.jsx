@@ -1,33 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import responseMovies from './mocks/with-results.json'
+import withoutResults from './mocks/no-results.json'
 import './App.css'
+import { Movies } from './components/Movies'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const movies = responseMovies.Search
+
+  const mappedMovies = movies?.map(movie => ({
+    id : movie.imdbID,
+    title : movie.Title,
+    year : movie.Year,
+    poster : movie.Poster,
+  }))
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className='page'>
+        <header>
+          <h1>Buscador de Peliculas</h1>
+          <form className='form' action="">
+            <input type="text" placeholder='Avengers, The Matris, Star Wars...' />
+            <button type='submit'>Buscar</button>
+          </form>
+        </header>
+
+        <main>
+          <Movies movies={mappedMovies}/>
+        </main>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
