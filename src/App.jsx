@@ -1,31 +1,36 @@
-import responseMovies from './mocks/with-results.json'
-import withoutResults from './mocks/no-results.json'
-import './App.css'
 import { Movies } from './components/Movies'
+import { useMovies } from './hooks/useMovies'
+import './App.css'
+import { useState } from 'react'
 
 function App() {
-  const movies = responseMovies.Search
 
-  const mappedMovies = movies?.map(movie => ({
-    id : movie.imdbID,
-    title : movie.Title,
-    year : movie.Year,
-    poster : movie.Poster,
-  }))
+  const { movies } = useMovies()
+
+  const [query, setQuery] = useState('')
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const { query } = Object.fromEntries(new window.FormData(event.target))
+    console.log({query})
+  }
+
+  const handleChange = (event) => {
+    setQuery(event.target.value)
+  }
 
   return (
     <>
       <div className='page'>
         <header>
           <h1>Buscador de Peliculas</h1>
-          <form className='form' action="">
-            <input type="text" placeholder='Avengers, The Matris, Star Wars...' />
+          <form onSubmit={handleSubmit} className='form' action="">
+            <input onChange={handleChange} value={query} name='query' type="text" placeholder='Avengers, The Matris, Star Wars...' />
             <button type='submit'>Buscar</button>
           </form>
         </header>
-
         <main>
-          <Movies movies={mappedMovies}/>
+          <Movies movies={movies} />
         </main>
       </div>
     </>
