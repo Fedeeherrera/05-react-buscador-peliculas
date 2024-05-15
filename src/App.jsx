@@ -1,21 +1,29 @@
 import { Movies } from './components/Movies'
 import { useMovies } from './hooks/useMovies'
 import './App.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function useSearch() {
   const [search, updateSearch] = useState('')
   const [error, setError] = useState(null)
+  const isFirstInput = useRef(true)
 
   useEffect(() => {
+    if (isFirstInput.current) {
+      isFirstInput.current = search === ''
+      return
+    }
+
     if (search == '') {
       setError('No se puede buscar una pelicula vacia')
       return
     }
 
     if (search.length < 2) {
-      setError('La busqueda debe tener a menos 2 caracteres')
-      return
+      setTimeout(() => {
+        setError('La busqueda debe tener a menos 2 caracteres')
+        return
+      }, 1000)
     }
     setError(null)
   }, [search])
@@ -32,7 +40,6 @@ function App() {
   }
 
   const handleChange = (event) => {
-    const newQuery = event.target.value
     updateSearch(event.target.value)
   }
 
