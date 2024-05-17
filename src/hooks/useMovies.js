@@ -1,33 +1,30 @@
-import withResults from '../mocks/with-results.json'
-import withoutResults from '../mocks/no-results.json'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { searchMovies } from '../services/movies'
 
+export function useMovies({ search, sort }) {
+  const [movies, setMovies] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState([])
+  const previousSearch = useRef(search)
 
-export function useMovies({search}) {
-
-  const [responseMovies, setResponseMovies] = useState([])
-
-  const movies = responseMovies.Search
-
-  const mappedMovies = movies?.map(movie => ({
-    id : movie.imdbID,
-    title : movie.Title,
-    year : movie.Year,
-    image : movie.Poster,
-  }))
-
-  const getMovies = () => {
-    if(search) {
-      //setResponseMovies(withResults)
-      fetch(`https://www.omdbapi.com/?apikey=32bcbc11&s=${search}`)
-      .then(response => response.json())
-      .then(json => {
-        setResponseMovies(json)
-      })
-    } else {
-      setResponseMovies(withoutResults)
+  const getMovies = async () => {
+    if(previousSearch.current === search) return
+    try {
+      setLoading(true)
+      setError(null)
+      previousSearch.current = search
+      const newMovies = await searchMovies({ search })
+      setMovies(newMovies)
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
     }
   }
 
-  return {movies : mappedMovies, getMovies}
+  const sortedMovies = sort 
+  ? [...movies].sort((a,b) => a.title.localeCompare(b.title))
+  : movies
+
+  return { movies : sortedMovies, getMovies, loading }
 }
