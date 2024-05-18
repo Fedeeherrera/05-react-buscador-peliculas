@@ -23,7 +23,7 @@ export function useMovies({ search, sort }) {
   }
 
   const sortedMovies = sort 
-  ? [...movies].sort((a,b) => a.title.localeCompare(b.title))
+  ? [...movies].sort((a,b) => a.year.localeCompare(b.year))
   : movies
 
   return { movies : sortedMovies, getMovies, loading }
